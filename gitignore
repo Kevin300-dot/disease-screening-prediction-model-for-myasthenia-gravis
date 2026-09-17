@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.pyc
+disease_dataset.csv
+SIH_MG_results.json
+*.pdf

@@ -1,0 +1,82 @@
+[
+  {
+    "Feature":"CRP",
+    "Importance":0.179709563
+  },
+  {
+    "Feature":"Hemoglobin",
+    "Importance":0.1423099549
+  },
+  {
+    "Feature":"Lymphocytes",
+    "Importance":0.1388979537
+  },
+  {
+    "Feature":"Esbach",
+    "Importance":0.1381771728
+  },
+  {
+    "Feature":"ESR",
+    "Importance":0.116616538
+  },
+  {
+    "Feature":"Basophils",
+    "Importance":0.1123230928
+  },
+  {
+    "Feature":"Stiffness in the joints",
+    "Importance":0.0212558934
+  },
+  {
+    "Feature":"Anti-SMA",
+    "Importance":0.0208137122
+  },
+  {
+    "Feature":"Dizziness",
+    "Importance":0.0205543552
+  },
+  {
+    "Feature":"Brittle hair or hair loss",
+    "Importance":0.0199386236
+  },
+  {
+    "Feature":"ANA",
+    "Importance":0.0194464279
+  },
+  {
+    "Feature":"Joint pain",
+    "Importance":0.0193475301
+  },
+  {
+    "Feature":"Weight loss",
+    "Importance":0.0189585961
+  },
+  {
+    "Feature":"Fatigue or chronic tiredness",
+    "Importance":0.0185679186
+  },
+  {
+    "Feature":"Anti_BP230",
+    "Importance":0.0060720566
+  },
+  {
+    "Feature":"Anti_TIF1",
+    "Importance":0.0038931528
+  },
+  {
+    "Feature":"EMA",
+    "Importance":0.0012777115
+  },
+  {
+    "Feature":"ANCA",
+    "Importance":0.0008609588
+  },
+  {
+    "Feature":"Anti_epidermal_basement_membrane_IgA",
+    "Importance":0.0008472346
+  },
+  {
+    "Feature":"Anti_RNP",
+    "Importance":0.0001315536
+  }
+]
