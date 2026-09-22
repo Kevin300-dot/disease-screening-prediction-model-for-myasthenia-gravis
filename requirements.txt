@@ -1,9 +1,9 @@
 streamlit
-tensorflow
-pennylane
+tensorflow==2.15.1
+pennylane==0.38.0
 scikit-learn
 pandas
-numpy
+numpy<2.0
 matplotlib
 seaborn
 joblib
