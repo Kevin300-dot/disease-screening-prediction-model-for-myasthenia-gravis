@@ -1,0 +1,90 @@
+{
+  "best_model": "Logistic Regression",
+  "prevalence": 0.4,
+  "thresholds": {
+    "Naive Bayes": 0.5650007899748982,
+    "Decision Tree": 0.5447792956608963,
+    "Linear Regression": 0.46482017091210925,
+    "Logistic Regression": 0.525922363139618,
+    "Random Forest": 0.5043718751551763
+  },
+  "cv_roc_auc": {
+    "Naive Bayes": 0.994014180501302,
+    "Decision Tree": 0.9869258117675781,
+    "Linear Regression": 0.9967190551757813,
+    "Logistic Regression": 0.9982643636067708,
+    "Random Forest": 0.9976257324218751
+  },
+  "test": {
+    "Naive Bayes": {
+      "accuracy": 0.959375,
+      "balanced_accuracy": 0.9614583333333333,
+      "precision": 0.929745889387145,
+      "recall": 0.971875,
+      "specificity": 0.9510416666666667,
+      "f1": 0.9503437738731857,
+      "roc_auc": 0.9931193033854167,
+      "avg_precision": 0.9880609865480162,
+      "tn": 913,
+      "fp": 47,
+      "fn": 18,
+      "tp": 622
+    },
+    "Decision Tree": {
+      "accuracy": 0.9525,
+      "balanced_accuracy": 0.9497395833333333,
+      "precision": 0.944794952681388,
+      "recall": 0.9359375,
+      "specificity": 0.9635416666666666,
+      "f1": 0.9403453689167975,
+      "roc_auc": 0.98407470703125,
+      "avg_precision": 0.9774737882833673,
+      "tn": 925,
+      "fp": 35,
+      "fn": 41,
+      "tp": 599
+    },
+    "Linear Regression": {
+      "accuracy": 0.979375,
+      "balanced_accuracy": 0.9768229166666667,
+      "precision": 0.9840510366826156,
+      "recall": 0.9640625,
+      "specificity": 0.9895833333333334,
+      "f1": 0.9739542225730071,
+      "roc_auc": 0.9944661458333334,
+      "avg_precision": 0.9945282012490119,
+      "tn": 950,
+      "fp": 10,
+      "fn": 23,
+      "tp": 617
+    },
+    "Logistic Regression": {
+      "accuracy": 0.99,
+      "balanced_accuracy": 0.9893229166666666,
+      "precision": 0.9890282131661442,
+      "recall": 0.9859375,
+      "specificity": 0.9927083333333333,
+      "f1": 0.9874804381846636,
+      "roc_auc": 0.9966276041666666,
+      "avg_precision": 0.9968592214410353,
+      "tn": 953,
+      "fp": 7,
+      "fn": 9,
+      "tp": 631
+    },
+    "Random Forest": {
+      "accuracy": 0.980625,
+      "balanced_accuracy": 0.9796875,
+      "precision": 0.9765258215962441,
+      "recall": 0.975,
+      "specificity": 0.984375,
+      "f1": 0.9757623143080532,
+      "roc_auc": 0.9964339192708334,
+      "avg_precision": 0.9960238424190088,
+      "tn": 945,
+      "fp": 15,
+      "fn": 16,
+      "tp": 624
+    }
+  }
+}

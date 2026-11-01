@@ -1,0 +1,143 @@
+@import "tailwindcss" source(none);
+@import "tw-animate-css";
+@source "../src";
+@custom-variant dark (&:is(.dark *));
+@theme inline {
+ --font-sans: "Inter", sans-serif;
+ --font-display: "Space Grotesk", sans-serif;
+ --font-mono: "JetBrains Mono", monospace;
+ --color-background: var(--background);
+ --color-foreground: var(--foreground);
+ --color-card: var(--card);
+ --color-card-foreground: var(--foreground);
+ --color-popover: var(--card);
+ --color-popover-foreground: var(--foreground);
+ --color-primary: var(--primary);
+ --color-primary-foreground: var(--background);
+ --color-secondary: var(--surface);
+ --color-secondary-foreground: var(--foreground);
+ --color-surface: var(--surface);
+ --color-muted: var(--surface);
+ --color-muted-foreground: var(--muted-foreground);
+ --color-accent: var(--surface);
+ --color-accent-foreground: var(--primary);
+ --color-emergency: var(--emergency);
+ --color-emergency-foreground: var(--foreground);
+ --color-destructive: var(--emergency);
+ --color-destructive-foreground: var(--foreground);
+ --color-caution: var(--caution);
+ --color-success: var(--success);
+ --color-border: var(--border);
+ --color-input: var(--border);
+ --color-ring: var(--primary);
+ --radius-sm: 4px;
+ --radius-md: 6px;
+ --radius-lg: 8px;
+}
+:root {
+ --background: oklch(0.133 0.017 270);
+ --foreground: oklch(0.929 0.013 255);
+ --card: oklch(0.178 0.031 265);
+ --surface: oklch(0.205 0.038 263);
+ --primary: oklch(0.797 0.134 211.53);
+ --muted-foreground: oklch(0.665 0.038 261);
+ --border: oklch(0.256 0.047 263);
+ --emergency: oklch(0.645 0.215 16.44);
+ --caution: oklch(0.769 0.188 70.08);
+ --success: oklch(0.765 0.177 163.22);
+ --chart-1: var(--primary);
+ --chart-2: var(--caution);
+ --chart-3: var(--success);
+ --chart-4: var(--emergency);
+ --chart-5: oklch(0.718 0.125 292);
+ --grid-line: color-mix(in oklab, var(--border) 45%, transparent);
+ --neon-shadow: 0 0 22px -10px color-mix(in oklab,var(--primary) 45%,transparent);
+ --radius: 8px;
+}
+@layer base {
+ * { border-color: var(--border); letter-spacing: 0; }
+ body { margin: 0; background: var(--background); color: var(--foreground); font-family: var(--font-sans); }
+ h1,h2,h3 { font-family: var(--font-display); }
+ input,select { color-scheme: dark; }
+ ::selection { background: color-mix(in oklab,var(--primary) 25%,transparent); }
+}
+.screen-grid { min-height:100vh; background-image: linear-gradient(var(--grid-line) 1px, transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px); background-size:44px 44px; }
+.neon-glow { box-shadow:var(--neon-shadow); }
+.glass-panel { background:color-mix(in oklab,var(--card) 96%,transparent); border:1px solid var(--border); }
+.screen-content { max-width:1400px; margin:auto; padding:28px 40px; }
+.screen-header { display:flex; align-items:center; justify-content:space-between; gap:20px; padding-bottom:24px; border-bottom:1px solid var(--border); }
+.screen-layout { display:grid; grid-template-columns:minmax(0,7fr) minmax(0,5fr); gap:32px; margin-top:28px; align-items:start; }
+.section-label { font-family:var(--font-mono); font-size:11px; text-transform:uppercase; color:var(--muted-foreground); }
+.screen-title { font-size:30px; line-height:1.3; font-weight:600; }
+.step-control { padding:0; min-height:40px; border:0; background:transparent; color:var(--muted-foreground); justify-content:flex-start; }
+.step-control[aria-current="step"] { color:var(--primary); }
+.choice-control { width:100%; height:auto; min-height:48px; justify-content:flex-start; text-align:left; padding:12px; background:var(--background); border:1px solid var(--border); color:var(--foreground); font-weight:400; }
+.choice-control:hover { border-color:var(--primary); background:var(--surface); }
+.choice-control[aria-pressed="true"] { background:color-mix(in oklab,var(--primary) 10%,var(--background)); border-color:color-mix(in oklab,var(--primary) 50%,var(--border)); }
+.choice-control[data-critical="true"][aria-pressed="true"] { border-color:var(--emergency); background:color-mix(in oklab,var(--emergency) 10%,var(--background)); }
+.check-box { display:grid; place-items:center; width:17px; height:17px; flex-shrink:0; border:1px solid var(--muted-foreground); border-radius:3px; }
+.choice-control[aria-pressed="true"] .check-box { background:var(--primary); border-color:var(--primary); color:var(--background); }
+.choice-control[data-critical="true"][aria-pressed="true"] .check-box { background:var(--emergency); border-color:var(--emergency); }
+.science-image { width:100%; height:210px; object-fit:cover; border-radius:6px; margin:18px 0; }
+.pending-results { padding:24px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+.rise-in { animation: rise-in .3s ease-out; }
+@keyframes rise-in { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+.recharts-default-tooltip { background:var(--card) !important; border:1px solid var(--border) !important; border-radius:6px; color:var(--foreground); font-size:12px; }
+.recharts-tooltip-item { color:var(--foreground) !important; }
+@media(max-width:900px) { .screen-content { padding:22px; } .screen-layout { grid-template-columns:1fr; gap:28px; } }
+@media(max-width:540px) { .screen-content { padding:20px 16px; } .screen-header { align-items:flex-start; } .screen-title { font-size:26px; } .science-image { height:185px; } }
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none !important; transition:none !important; } }
+
+/* ---------- screening report (paper style, mirrors the PDF) ---------- */
+.screen-layout-single { grid-template-columns:minmax(0,1fr); }
+.report-paper { --r-ink:#1b2733; --r-muted:#5b6b7b; --r-line:#d5dce4; --r-panel:#f3f6f9; --r-navy:#0b2545; --r-teal:#0e7c86; --r-red:#c0262d; --r-red-bg:#fdecec; --r-green:#17794f; --r-green-bg:#e7f6ee; background:#fff; color:var(--r-ink); border-radius:8px; overflow:hidden; font-size:13px; line-height:1.6; box-shadow:0 24px 60px -34px rgba(0,0,0,.7); }
+.report-paper h2, .report-paper h3 { font-family:var(--font-display); }
+.report-head { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px; padding:18px 28px; background:var(--r-navy); color:#fff; border-bottom:4px solid var(--r-teal); }
+.report-brand { font-family:var(--font-display); font-size:24px; font-weight:700; line-height:1.1; }
+.report-brand-sub { margin-top:3px; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:#bfd3e6; }
+.report-head-right { text-align:right; font-size:11px; color:#bfd3e6; }
+.report-head-title { font-family:var(--font-display); font-size:16px; font-weight:700; color:#fff; }
+.report-body { padding:22px 28px 28px; }
+.report-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border-top:1px solid var(--r-line); border-left:1px solid var(--r-line); background:var(--r-panel); }
+.report-grid > div { padding:9px 14px; border-right:1px solid var(--r-line); border-bottom:1px solid var(--r-line); }
+.report-fact-label { font-family:var(--font-mono); font-size:9.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--r-muted); }
+.report-fact-value { font-weight:700; font-size:14px; }
+.report-result { display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); margin-top:18px; border:2px solid; border-radius:8px; overflow:hidden; }
+.report-result.positive { border-color:var(--r-red); background:var(--r-red-bg); color:var(--r-red); }
+.report-result.negative { border-color:var(--r-green); background:var(--r-green-bg); color:var(--r-green); }
+.report-result-main { padding:18px 24px; }
+.report-result-confidence { padding:18px 24px; text-align:center; border-left:1px solid currentColor; display:flex; flex-direction:column; justify-content:center; }
+.report-result-test { font-family:var(--font-display); font-size:16px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--r-muted); }
+.report-verdict { font-family:var(--font-display); font-weight:800; font-size:clamp(46px,9vw,80px); line-height:1.02; letter-spacing:.01em; }
+.report-confidence-value { font-family:var(--font-display); font-weight:800; font-size:clamp(34px,6vw,50px); line-height:1.1; }
+.report-result-meta { margin-top:6px; font-size:11.5px; color:var(--r-muted); }
+.report-critical { display:flex; gap:10px; align-items:flex-start; margin-top:14px; padding:12px 14px; border:1px solid var(--r-red); border-radius:6px; background:var(--r-red-bg); color:var(--r-red); font-size:12.5px; }
+.report-section-title { margin:26px 0 12px; padding-bottom:4px; border-bottom:2px solid var(--r-teal); font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--r-navy); }
+.report-sub { margin:14px 0 4px; font-size:12.5px; font-weight:700; color:var(--r-ink); }
+.report-list { margin:0; padding-left:18px; list-style:disc; }
+.report-list li { margin:2px 0; }
+.report-muted { color:var(--r-muted); font-size:12px; }
+.report-pos { color:var(--r-red); }
+.report-neg { color:var(--r-green); }
+.report-scroll { overflow-x:auto; }
+.report-table { width:100%; border-collapse:collapse; font-size:12.5px; border:1px solid var(--r-line); }
+.report-table th { padding:7px 10px; background:var(--r-navy); color:#fff; text-align:left; font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; white-space:nowrap; }
+.report-table td { padding:7px 10px; border-bottom:1px solid var(--r-line); vertical-align:top; }
+.report-table tbody tr:nth-child(even) { background:var(--r-panel); }
+.report-footer { margin-top:28px; padding-top:12px; border-top:1px solid var(--r-line); font-size:11px; color:var(--r-muted); }
+@media(max-width:640px) {
+  .report-head, .report-body { padding-left:16px; padding-right:16px; }
+  .report-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .report-result { grid-template-columns:1fr; }
+  .report-result-confidence { border-left:0; border-top:1px solid currentColor; }
+  .report-head-right { text-align:left; }
+}
+
+/* Hospital finder (South Chennai) inside the report */
+.report-hospital-grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); }
+.report-hospital { border:1px solid var(--r-line); border-left:4px solid var(--r-teal); background:var(--r-panel); border-radius:6px; padding:12px 14px; }
+.report-hospital-tag { font-family:var(--font-mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--r-teal); font-weight:700; }
+.report-hospital-name { font-family:var(--font-display); font-size:16px; font-weight:700; color:var(--r-navy); line-height:1.25; margin-top:2px; }
+.report-hospital-line { display:flex; align-items:flex-start; gap:6px; margin-top:4px; }
+.report-hospital-dist { margin-top:6px; font-weight:700; color:var(--r-navy); }
+.report-link { color:var(--r-teal); font-weight:600; text-decoration:underline; }

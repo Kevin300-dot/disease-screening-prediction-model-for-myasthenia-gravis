@@ -1,0 +1,350 @@
+{
+  "primary_model": "Logistic Regression",
+  "n_test": 1600,
+  "n_mg": 640,
+  "bootstrap_resamples": 2000,
+  "intervals": {
+    "Naive Bayes": {
+      "accuracy": {
+        "value": 0.959375,
+        "ci95": [
+          0.949375,
+          0.96875
+        ]
+      },
+      "sensitivity": {
+        "value": 0.971875,
+        "ci95": [
+          0.958191442573511,
+          0.9842773466425757
+        ]
+      },
+      "specificity": {
+        "value": 0.9510416666666667,
+        "ci95": [
+          0.9365206742711231,
+          0.9643241248534364
+        ]
+      },
+      "roc_auc": {
+        "value": 0.9931193033854167,
+        "ci95": [
+          0.9897175760312548,
+          0.9961849349431418
+        ]
+      }
+    },
+    "Decision Tree": {
+      "accuracy": {
+        "value": 0.9525,
+        "ci95": [
+          0.941875,
+          0.9625
+        ]
+      },
+      "sensitivity": {
+        "value": 0.9359375,
+        "ci95": [
+          0.9175388357223258,
+          0.9544740973312402
+        ]
+      },
+      "specificity": {
+        "value": 0.9635416666666666,
+        "ci95": [
+          0.9507692307692308,
+          0.9744155498020104
+        ]
+      },
+      "roc_auc": {
+        "value": 0.98407470703125,
+        "ci95": [
+          0.9776859689760898,
+          0.989725325886709
+        ]
+      }
+    },
+    "Linear Regression": {
+      "accuracy": {
+        "value": 0.979375,
+        "ci95": [
+          0.971875,
+          0.98625
+        ]
+      },
+      "sensitivity": {
+        "value": 0.9640625,
+        "ci95": [
+          0.9495393525998567,
+          0.9783298455834575
+        ]
+      },
+      "specificity": {
+        "value": 0.9895833333333334,
+        "ci95": [
+          0.9830169299914523,
+          0.9949291345298208
+        ]
+      },
+      "roc_auc": {
+        "value": 0.9944661458333334,
+        "ci95": [
+          0.9900911871005429,
+          0.9978097905085145
+        ]
+      }
+    },
+    "Logistic Regression": {
+      "accuracy": {
+        "value": 0.99,
+        "ci95": [
+          0.985,
+          0.994390625
+        ]
+      },
+      "sensitivity": {
+        "value": 0.9859375,
+        "ci95": [
+          0.9756888168557536,
+          0.9939221187656733
+        ]
+      },
+      "specificity": {
+        "value": 0.9927083333333333,
+        "ci95": [
+          0.9871650876076826,
+          0.9978635881104034
+        ]
+      },
+      "roc_auc": {
+        "value": 0.9966276041666666,
+        "ci95": [
+          0.9931759700295896,
+          0.9993105931418138
+        ]
+      }
+    },
+    "Random Forest": {
+      "accuracy": {
+        "value": 0.980625,
+        "ci95": [
+          0.97375,
+          0.9868906249999999
+        ]
+      },
+      "sensitivity": {
+        "value": 0.975,
+        "ci95": [
+          0.9622026366022429,
+          0.9861968474901117
+        ]
+      },
+      "specificity": {
+        "value": 0.984375,
+        "ci95": [
+          0.9765448621477466,
+          0.9916144752872995
+        ]
+      },
+      "roc_auc": {
+        "value": 0.9964339192708334,
+        "ci95": [
+          0.9937895498177906,
+          0.9986528089187674
+        ]
+      }
+    }
+  },
+  "calibration": {
+    "brier": 0.008890710894258348,
+    "ece": 0.006780377709420735,
+    "bins": [
+      {
+        "bin": "0.0-0.1",
+        "n": 938,
+        "mean_predicted": 0.007698851405906232,
+        "observed_rate": 0.006396588486140725
+      },
+      {
+        "bin": "0.1-0.2",
+        "n": 10,
+        "mean_predicted": 0.14826358324886674,
+        "observed_rate": 0.0
+      },
+      {
+        "bin": "0.2-0.3",
+        "n": 4,
+        "mean_predicted": 0.2625295441852227,
+        "observed_rate": 0.0
+      },
+      {
+        "bin": "0.3-0.4",
+        "n": 8,
+        "mean_predicted": 0.3642923672328356,
+        "observed_rate": 0.25
+      },
+      {
+        "bin": "0.4-0.5",
+        "n": 2,
+        "mean_predicted": 0.4780882295936806,
+        "observed_rate": 0.5
+      },
+      {
+        "bin": "0.5-0.6",
+        "n": 2,
+        "mean_predicted": 0.5731727841535057,
+        "observed_rate": 0.5
+      },
+      {
+        "bin": "0.6-0.7",
+        "n": 5,
+        "mean_predicted": 0.6411693811646482,
+        "observed_rate": 0.8
+      },
+      {
+        "bin": "0.7-0.8",
+        "n": 1,
+        "mean_predicted": 0.7933338778323669,
+        "observed_rate": 0.0
+      },
+      {
+        "bin": "0.8-0.9",
+        "n": 3,
+        "mean_predicted": 0.8416926600684457,
+        "observed_rate": 0.6666666666666666
+      },
+      {
+        "bin": "0.9-1.0",
+        "n": 627,
+        "mean_predicted": 0.9890314916939286,
+        "observed_rate": 0.9952153110047847
+      }
+    ]
+  },
+  "predictive_values": [
+    {
+      "prevalence": 0.0002,
+      "ppv": 0.02633592565283313,
+      "npv": 0.999997166282838,
+      "false_positives_per_true_positive": 36.970945589012295
+    },
+    {
+      "prevalence": 0.01,
+      "ppv": 0.5773101555352232,
+      "npv": 0.9998569316610234,
+      "false_positives_per_true_positive": 0.7321711568938221
+    },
+    {
+      "prevalence": 0.05,
+      "ppv": 0.8767948124131538,
+      "npv": 0.9992549874451587,
+      "false_positives_per_true_positive": 0.14051769677760223
+    },
+    {
+      "prevalence": 0.2,
+      "ppv": 0.9712673165726012,
+      "npv": 0.9964710495360084,
+      "false_positives_per_true_positive": 0.029582673005810987
+    },
+    {
+      "prevalence": 0.4,
+      "ppv": 0.9890282131661442,
+      "npv": 0.9906444906444907,
+      "false_positives_per_true_positive": 0.011093502377179083
+    }
+  ],
+  "sensitivity_by_mg_form": {
+    "Myasthenia gravis (bulbar-predominant)": {
+      "n": 122,
+      "sensitivity": 0.9918032786885246
+    },
+    "Myasthenia gravis (generalized)": {
+      "n": 399,
+      "sensitivity": 0.9899749373433584
+    },
+    "Myasthenia gravis (ocular)": {
+      "n": 119,
+      "sensitivity": 0.9663865546218487
+    }
+  },
+  "specificity_by_non_mg_group": {
+    "Celiac disease / IBD / vasculitis": {
+      "n": 51,
+      "specificity": 1.0
+    },
+    "Fibromyalgia / chronic fatigue syndrome": {
+      "n": 44,
+      "specificity": 1.0
+    },
+    "Guillain-Barre syndrome": {
+      "n": 32,
+      "specificity": 0.96875
+    },
+    "Hashimoto thyroiditis": {
+      "n": 42,
+      "specificity": 1.0
+    },
+    "Lambert-Eaton myasthenic syndrome": {
+      "n": 28,
+      "specificity": 0.9285714285714286
+    },
+    "Multiple sclerosis": {
+      "n": 57,
+      "specificity": 0.9824561403508771
+    },
+    "Normal": {
+      "n": 496,
+      "specificity": 0.9959677419354839
+    },
+    "Polymyositis / dermatomyositis": {
+      "n": 51,
+      "specificity": 1.0
+    },
+    "Rheumatoid arthritis": {
+      "n": 37,
+      "specificity": 1.0
+    },
+    "Sjogren syndrome": {
+      "n": 36,
+      "specificity": 1.0
+    },
+    "Systemic lupus erythematosus": {
+      "n": 42,
+      "specificity": 1.0
+    },
+    "Thyroid eye disease (Graves)": {
+      "n": 44,
+      "specificity": 0.9772727272727273
+    }
+  },
+  "noise_robustness": [
+    {
+      "accuracy": 0.99,
+      "sensitivity": 0.9859375,
+      "specificity": 0.9927083333333333,
+      "roc_auc": 0.9966276041666666,
+      "flip_probability": 0.0
+    },
+    {
+      "accuracy": 0.944375,
+      "sensitivity": 0.9859375,
+      "specificity": 0.9166666666666666,
+      "roc_auc": 0.9925699869791667,
+      "flip_probability": 0.05
+    },
+    {
+      "accuracy": 0.87875,
+      "sensitivity": 0.975,
+      "specificity": 0.8145833333333333,
+      "roc_auc": 0.9778694661458334,
+      "flip_probability": 0.1
+    },
+    {
+      "accuracy": 0.730625,
+      "sensitivity": 0.959375,
+      "specificity": 0.578125,
+      "roc_auc": 0.9194498697916667,
+      "flip_probability": 0.2
+    }
+  ]
+}
