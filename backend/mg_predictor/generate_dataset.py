@@ -11,8 +11,11 @@ patients, fatigable weakness that is worse in the evening and better with rest, 
 limb involvement in generalized disease, bimodal age/sex onset) and of the conditions that
 are commonly confused with it (Lambert-Eaton, thyroid eye disease, Guillain-Barre, myositis,
 multiple sclerosis, lupus, rheumatoid arthritis, Sjogren, hypothyroidism, fibromyalgia ...).
-Some atypical presentations and "worried well" patients are mixed in so the classes overlap
-a little - results are high but not a perfect 100%.
+Real patients are messier than a checklist, so the simulation deliberately overlaps the classes:
+mild / atypical / seronegative MG, "worried well" people, non-MG patients who also have drooping
+eyelids or double vision, per-patient over- and under-reporting of symptoms, and recording errors.
+All probabilities below are MODELLING ASSUMPTIONS written from the clinical literature, not
+measurements - the metrics you get from this data describe the simulation, never real patients.
 
 Run:  python generate_dataset.py      (deterministic, seed 42)
 """
@@ -25,7 +28,7 @@ from mg import config as C
 
 SEED = 42
 N_MG, N_HEALTHY, N_OTHER = 3200, 2400, 2400
-FLIP_NOISE = 0.012          # chance that any single yes/no answer is recorded the opposite way
+FLIP_NOISE = 0.03           # chance that any single yes/no answer is recorded the opposite way
 
 MG_KEYS = list(C.MG_SIGNS)
 GEN_KEYS = list(C.GENERAL_SYMPTOMS)
@@ -42,7 +45,7 @@ _BLOOD_BASE_OTHER = dict(achr_antibody_positive=.004, musk_antibody_positive=.00
                          abnormal_wbc=.15, abnormal_platelets=.10, high_esr=.35, high_crp=.30,
                          abnormal_tsh=.15, high_ck=.08)
 # MG: (ocular, generalized, bulbar-predominant) - AChR+ in ~50% / 85% / 70% of tested patients, ~65% tested
-BLOOD_MG = dict(achr_antibody_positive=(.33, .55, .45), musk_antibody_positive=(.01, .03, .10),
+BLOOD_MG = dict(achr_antibody_positive=(.25, .50, .40), musk_antibody_positive=(.01, .03, .10),
                 low_hemoglobin=(.10,) * 3, abnormal_wbc=(.07,) * 3, abnormal_platelets=(.04,) * 3,
                 high_esr=(.08,) * 3, high_crp=(.07,) * 3, abnormal_tsh=(.17,) * 3, high_ck=(.05,) * 3)
 BLOOD_OTHER_OVERRIDES = {
@@ -85,7 +88,7 @@ HEALTHY = dict(
     droopy_eyelids=.02, double_vision=.01, difficulty_chewing=.01, slurred_nasal_speech=.01,
     voice_fatigue=.02, facial_weakness=.01, difficulty_swallowing=.01, weak_neck_head_drop=.01,
     limb_weakness=.02, difficulty_raising_arms=.02, difficulty_climbing_stairs=.02,
-    hand_grip_weakness=.01, fatigable_weakness=.03, worse_end_of_day=.10, improves_with_rest=.08,
+    hand_grip_weakness=.01, fatigable_weakness=.05, worse_end_of_day=.20, improves_with_rest=.15,
     shortness_of_breath=.02, weak_cough=.01,
     fatigue=.12, low_grade_fever=.03, dizziness=.06, weight_loss=.02, rashes_skin_lesions=.04,
     joint_pain=.06, joint_stiffness=.05, muscle_pain=.05, hair_loss=.05, dry_eyes_mouth=.05,
@@ -104,8 +107,8 @@ MG_SIGN_P = {
     "difficulty_swallowing": (.02, .30, .70), "weak_neck_head_drop": (.02, .40, .30),
     "limb_weakness":       (.03, .75, .35), "difficulty_raising_arms": (.02, .62, .30),
     "difficulty_climbing_stairs": (.02, .55, .28), "hand_grip_weakness": (.02, .35, .18),
-    "fatigable_weakness":  (.94, .95, .92), "worse_end_of_day":   (.88, .88, .86),
-    "improves_with_rest":  (.85, .88, .85), "shortness_of_breath": (.00, .18, .22),
+    "fatigable_weakness":  (.80, .88, .82), "worse_end_of_day":   (.70, .75, .70),
+    "improves_with_rest":  (.65, .72, .65), "shortness_of_breath": (.00, .18, .22),
     "weak_cough":          (.00, .12, .20),
 }
 MG_GENERAL = dict(
@@ -115,8 +118,9 @@ MG_GENERAL = dict(
     family_history_autoimmune=.20, other_autoimmune_condition=.14, thyroid_disease=.15,
     known_thymus_abnormality=.12, recent_infection_or_stress=.30,
 )
-MILD_MG_SHARE = 0.08        # atypical / mild presentations (fewer classic signs)
+MILD_MG_SHARE = 0.20        # mild / atypical presentations (fewer classic signs)
 MILD_MG_FACTOR = 0.45
+REPORTER_SD = 0.9           # per-patient tendency to over/under-report symptoms (logit scale)
 
 # ------------------------------------------------------------------ look-alike conditions
 # (name, share, overrides on top of a mildly elevated "other autoimmune" baseline)
@@ -160,6 +164,10 @@ OTHER_PROFILES = [
         fatigue=.95, muscle_pain=.85, headache=.60, general_unwell=.70, dizziness=.40,
         worse_end_of_day=.50, improves_with_rest=.40, fatigable_weakness=.45, joint_pain=.50,
         limb_weakness=.25, numbness_tingling=.30)),
+    ("Cranial nerve palsy / other eye-muscle disorder (non-MG)", .08, dict(
+        droopy_eyelids=.50, double_vision=.75, headache=.35, dizziness=.20, fatigue=.30,
+        worse_end_of_day=.25, improves_with_rest=.20, fatigable_weakness=.15,
+        recent_infection_or_stress=.20)),
     ("Celiac disease / IBD / vasculitis", .12, dict(
         fatigue=.60, weight_loss=.35, joint_pain=.30, rashes_skin_lesions=.30, general_unwell=.40,
         low_grade_fever=.25, other_autoimmune_condition=.35)),
@@ -167,8 +175,15 @@ OTHER_PROFILES = [
 
 
 # ------------------------------------------------------------------ helpers
+def _shift(p, z):
+    """Move probability p on the logit scale by z (per-patient reporting tendency)."""
+    p = np.clip(p, 1e-4, 1 - 1e-4)
+    return 1.0 / (1.0 + np.exp(-(np.log(p / (1 - p)) + z)))
+
+
 def _draw(rng, probs: dict, n: int) -> pd.DataFrame:
-    return pd.DataFrame({k: (rng.random(n) < probs[k]).astype(int) for k in BINARY_KEYS})
+    z = rng.normal(0, REPORTER_SD, n)      # same patient over/under-reports across all questions
+    return pd.DataFrame({k: (rng.random(n) < _shift(probs[k], z)).astype(int) for k in BINARY_KEYS})
 
 
 def _age_sex(rng, n, kind: str):
@@ -195,15 +210,16 @@ def make_mg(rng, n):
     pheno = rng.choice(3, size=n, p=MG_PHENOTYPE_P)
     cols = {}
     mild = rng.random(n) < MILD_MG_SHARE
+    z = rng.normal(0, REPORTER_SD, n)
     for k in MG_KEYS:
         p = np.array(MG_SIGN_P[k])[pheno]
         p = np.where(mild, p * MILD_MG_FACTOR, p)
-        cols[k] = (rng.random(n) < p).astype(int)
+        cols[k] = (rng.random(n) < _shift(p, z)).astype(int)
     for k in GEN_KEYS + HIS_KEYS:
         p = MG_GENERAL[k]
         if k == "weight_loss":
             p = np.where(pheno == 2, 0.25, p)
-        cols[k] = (rng.random(n) < p).astype(int)
+        cols[k] = (rng.random(n) < _shift(p, z)).astype(int)
     df = pd.DataFrame(cols)
     df["Diagnosis"] = np.array(["Myasthenia gravis (ocular)", "Myasthenia gravis (generalized)",
                                 "Myasthenia gravis (bulbar-predominant)"])[pheno]

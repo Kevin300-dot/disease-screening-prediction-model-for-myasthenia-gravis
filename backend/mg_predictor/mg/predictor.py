@@ -113,8 +113,25 @@ def _blood_panel(blood_tests, antibodies, male: int) -> dict:
     return {"panel": panel, "antibodies": ab_rows, "flags": flags}
 
 
+# The models are trained on a simulated cohort, so the app never claims certainty: every displayed
+# probability is limited to 3-97 %. (Raw model output can be ~0 or ~1 on textbook-perfect input.)
+PCT_FLOOR, PCT_CEIL = 3.0, 97.0
+
+
 def _clip_pct(p: float) -> float:
-    return round(min(99.9, max(0.1, p * 100)), 1)
+    return round(min(PCT_CEIL, max(PCT_FLOOR, p * 100)), 1)
+
+
+def _confidence_band(confidence: float, n_agree: int, n_models: int, nothing_entered: bool) -> str:
+    """High / Moderate / Borderline. Lowered when the five models disagree or almost nothing was entered."""
+    band = 0 if confidence >= 90 else 1 if confidence >= 75 else 2
+    if n_agree < n_models - 1:        # 3-2 split or worse
+        band = max(band, 2)
+    elif n_agree < n_models:          # 4-1 split
+        band = max(band, 1)
+    if nothing_entered:
+        band = 2
+    return ("High", "Moderate", "Borderline")[band]
 
 
 class MGPredictor:
@@ -346,6 +363,12 @@ class MGPredictor:
         confidence = primary["confidence_percent"]
 
         status = POSITIVE if positive else NEGATIVE
+        nothing_entered = not (flags or symptoms or blood["panel"]
+                               or any(a["status"] != "Not tested" for a in blood["antibodies"]))
+        advice = self._advice(positive, confidence, symptoms, flags, age, male)
+        if nothing_entered:
+            advice["next_steps"].insert(0, "No symptoms or results were entered, so this result carries very little "
+                                           "information. Complete the checklist for a meaningful screening.")
         return {
             "report": {
                 "report_id": report_id or f"MYA-{datetime.now():%Y%m%d}-{uuid.uuid4().hex[:6].upper()}",
@@ -357,7 +380,7 @@ class MGPredictor:
                 "status": status,
                 "headline": f"Myasthenia gravis: {status.title()}",
                 "confidence_percent": confidence,
-                "confidence_band": "High" if confidence >= 90 else "Moderate" if confidence >= 75 else "Borderline",
+                "confidence_band": _confidence_band(confidence, n_agree, len(per_model), nothing_entered),
                 "mg_probability_percent": primary["mg_probability_percent"],
                 "primary_model": self.best,
                 "models_positive": f"{n_pos} of {len(per_model)}",
@@ -374,6 +397,6 @@ class MGPredictor:
             "per_model": per_model,
             "performance": self._performance(),
             "recommended_specialists": self._specialists(positive, symptoms, flags),
-            "advice": self._advice(positive, confidence, symptoms, flags, age, male),
+            "advice": advice,
             "footer": K.REPORT_FOOTER,
         }

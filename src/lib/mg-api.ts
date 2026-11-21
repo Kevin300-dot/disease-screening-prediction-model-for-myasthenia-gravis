@@ -16,7 +16,7 @@ export interface PredictRequest {
   blood_group?: string | undefined;
   blood_tests?: Record<string, number> | undefined;
   antibodies?: Record<string, string> | undefined;
-  // Optional. South Chennai only: either a named area or GPS coordinates.
+  // Optional. Chennai only: either a named area or GPS coordinates.
   location?: { area: string } | { lat: number; lng: number } | undefined;
   // Only sent when downloading the PDF, so the PDF carries the same ID/time as the screen.
   report_id?: string | undefined;
@@ -155,7 +155,7 @@ export interface PredictResponse {
   result: ResultBlock;
   findings: FindingSection[];
   blood: BloodBlock;
-  // null unless the user gave a South Chennai location
+  // null unless the user gave a Chennai location
   care_locator: CareLocator | null;
   counts: { mg_signs: number; general_symptoms: number; history: number };
   per_model: PerModelResult[];

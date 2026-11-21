@@ -72,6 +72,10 @@ def positive_score(model, X) -> np.ndarray:
     """Continuous score where higher = more likely MG, for any of the five models."""
     if hasattr(model, "raw_score"):
         return np.asarray(model.raw_score(X))
+    if isinstance(model, GaussianNB):
+        # Naive Bayes probabilities saturate at 0/1; its log-odds keep the ranking information.
+        lp = model.predict_log_proba(X)
+        return np.clip(lp[:, 1] - lp[:, 0], -30.0, 30.0)
     return model.predict_proba(X)[:, 1]
 
 

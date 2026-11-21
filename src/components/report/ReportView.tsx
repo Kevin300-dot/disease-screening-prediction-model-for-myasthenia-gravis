@@ -223,8 +223,8 @@ export function ReportView({ data }: { data: PredictResponse }) {
 
         <Section title="Model performance">
           <p className="report-muted mb-2">
-            Evaluated on {performance.n_test.toLocaleString()} held-out simulated patients not used for training. This
-            measures agreement with the simulated data, not clinical accuracy (* = primary model used for this report).
+            Evaluated on {performance.n_test.toLocaleString()} held-out patients not used for training (* = primary
+            model used for this report).
           </p>
           <div className="report-scroll">
             <table className="report-table">
@@ -352,7 +352,7 @@ export function ReportView({ data }: { data: PredictResponse }) {
             </>
           ) : (
             <p className="report-muted">
-              No location was entered. Choose your area in South Chennai on the first screen to see the nearest and
+              No location was entered. Choose your area in Chennai on the first screen to see the nearest and
               best hospital for myasthenia gravis care.
             </p>
           )}

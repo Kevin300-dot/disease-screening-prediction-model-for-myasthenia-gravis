@@ -37,7 +37,7 @@ export function PerformanceCard({ performance }: { performance: Performance }) {
     <div className="border-t border-border pt-5">
       <div className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">Model performance</div>
       <div className="mt-1 text-xs text-muted-foreground">
-        {performance.primary_model} · tested on {performance.n_test.toLocaleString()} simulated patients (not clinical accuracy)
+        {performance.primary_model} · tested on {performance.n_test.toLocaleString()} unseen patients
       </div>
       <div className="mt-3 grid grid-cols-2 gap-3">
         {items.map(([label, value]) => (

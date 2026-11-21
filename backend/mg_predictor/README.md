@@ -48,7 +48,10 @@ curl -X POST http://127.0.0.1:5000/report-pdf -H "Content-Type: application/json
 * `symptoms` = general symptoms (13) and medical history (5)
 * `name`, `weight_kg`, `height_cm`, `duration_months` are optional; `age` and `gender` are required.
 
-## The dataset
+## The dataset (what changed)
+
+Generic symptoms (fever, fatigue, joint pain ...) look the same in MG and in every other disease, so no model
+can separate them. The dataset therefore uses MG-specific signs.
 
 `data/mg_screening_dataset.csv` (built by `generate_dataset.py`, seed 42) contains **8,000 simulated patients**:
 
@@ -60,12 +63,14 @@ curl -X POST http://127.0.0.1:5000/report-pdf -H "Content-Type: application/json
 
 Every patient has the full checklist the app asks (47 model inputs). Symptom frequencies follow the textbook
 picture of MG (ptosis, diplopia, fatigable weakness that is worse in the evening and better with rest, bulbar and
-limb involvement, bimodal age/sex onset). Atypical/mild MG cases, "worried well" patients and 1.2% answer noise
-are mixed in so the classes overlap slightly - results are high but not a perfect 100%.
+limb involvement, bimodal age/sex onset). To keep the classes realistically overlapping it also includes mild /
+seronegative MG (20% of MG), "worried well" people, non-MG patients with drooping eyelids or double vision (cranial
+nerve palsy, thyroid eye disease), a per-patient over/under-reporting tendency and 3% answer noise.
+Every probability in `generate_dataset.py` is a modelling assumption from the literature, not a measurement.
 
 **Because the patients are simulated, the accuracy figures describe the simulation, not real-world performance.**
 
-## Algorithms and results (simulated data)
+## Algorithms and results
 
 Naive Bayes, Decision Tree, Linear Regression (as a linear probability model), Logistic Regression, Random Forest.
 80% development / 20% untouched test split (stratified); calibrated with Platt scaling on 5-fold out-of-fold
@@ -75,14 +80,16 @@ Hold-out test set (1,600 patients), see `outputs/metrics.csv`:
 
 | Algorithm | Accuracy | Precision | Recall | F1 | ROC-AUC |
 |---|---|---|---|---|---|
-| Naive Bayes | 95.9% | 93.0% | 97.2% | 95.0% | 99.3% |
-| Decision Tree | 95.2% | 94.5% | 93.6% | 94.0% | 98.4% |
-| Linear Regression | 97.9% | 98.4% | 96.4% | 97.4% | 99.4% |
-| **Logistic Regression (primary)** | **99.0%** | **98.9%** | **98.6%** | **98.7%** | **99.7%** |
-| Random Forest | 98.1% | 97.7% | 97.5% | 97.6% | 99.6% |
+| Naive Bayes | 90.8% | 89.7% | 87.0% | 88.3% | 96.6% |
+| Decision Tree | 91.9% | 89.2% | 90.6% | 89.9% | 96.2% |
+| Linear Regression | 93.8% | 92.9% | 91.4% | 92.1% | 97.8% |
+| Logistic Regression | 93.8% | 92.1% | 92.5% | 92.3% | 97.9% |
+| **Random Forest (primary)** | **94.1%** | **92.6%** | **92.5%** | **92.6%** | **98.3%** |
 
-These figures describe the simulated cohort, not real patients. For confidence intervals, calibration, predictive values at
-realistic prevalence and robustness to noisy answers, run `python evaluate_honest.py` and read `../../docs/EVALUATION.md`.
+Confidence is graded, not saturated. Examples from the trained models: no input -> NEGATIVE, *Borderline* (almost no
+information); only drooping eyelids -> NEGATIVE ~62%; eyelids + double vision -> POSITIVE ~73% *Borderline*;
+a full classic picture -> POSITIVE at the 97% display cap. Displayed probabilities are limited to 3-97% because
+the models were trained on simulated data; the confidence band is lowered when the five models disagree.
 
 ## The report
 
@@ -116,9 +123,9 @@ tests/                unit, API, PDF and front-end parity tests
 ```
 
 
-## Blood details
+## Blood details (new)
 
-The simulated dataset includes nine blood-derived flags (anti-AChR / anti-MuSK antibodies, low hemoglobin,
+Nine blood-derived flags were added to the simulated dataset (anti-AChR / anti-MuSK antibodies, low hemoglobin,
 abnormal WBC / platelets / TSH, raised ESR / CRP / CK) with disease-specific frequencies - e.g. AChR antibodies in
 ~45-55% of simulated MG patients, raised CK in myositis, raised ESR/CRP in lupus and rheumatoid arthritis, abnormal
 TSH in thyroid disease. As with every other column these are simulated, so they describe the simulation, not real labs.
@@ -126,5 +133,5 @@ TSH in thyroid disease. As with every other column these are simulated, so they 
 ## If the frontend says "Could not reach the screening backend"
 
 The browser cannot connect to `http://127.0.0.1:5000`. Start the backend first (`start-backend.bat` on Windows,
-`./start-backend.sh` elsewhere), keep that window open, then reload the page. `api.py` works even if
+`./start-backend.sh` elsewhere), keep that window open, then reload the page. `api.py` now works even if
 `flask-cors` is missing, and retrains the model automatically if the saved one cannot be loaded.

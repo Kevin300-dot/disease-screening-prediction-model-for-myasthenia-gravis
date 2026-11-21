@@ -1,7 +1,7 @@
-"""South Chennai care locator: nearest hospital and best hospital for myasthenia gravis (MG).
+"""Chennai care locator: nearest hospital and best hospital for myasthenia gravis (MG).
 
 This module is completely separate from the prediction models - it never touches the MG
-screening result. It only looks at where the patient is and which real hospitals in South
+screening result. It only looks at where the patient is and which real hospitals in
 Chennai treat neurological disease.
 
 DATA PROVENANCE
@@ -13,7 +13,7 @@ DATA PROVENANCE
 
 HOW "BEST" IS DECIDED (transparent, rule-based - it is NOT a clinical outcome ranking)
   evidence score =  3  hospital's own neurology/department page names myasthenia gravis
-                    2  ... or its neurology team's own article names myasthenia gravis
+                    2  ... or its neurology team's article / department listing names myasthenia gravis
                     2  hospital lists an EMG / nerve-conduction laboratory
                     1  ... or its team's article mentions nerve-conduction studies
                     1  has a neurology department / neurosciences centre
@@ -25,7 +25,7 @@ from __future__ import annotations
 import math
 from urllib.parse import quote_plus
 
-REGION = "South Chennai"
+REGION = "Chennai"
 DISCLAIMER = (
     "Hospital information was taken from each hospital's own website and may change. Distances are "
     "approximate straight-line estimates from the centre of your area; open the map link for the real "
@@ -33,11 +33,11 @@ DISCLAIMER = (
     "ranking. Always phone the hospital to confirm that a neurologist is available before travelling."
 )
 
-# Bounding box that counts as "South Chennai" for GPS locations (covers Saidapet - Adyar in the north
-# to Perumbakkam - Tambaram in the south/west).
-BOUNDS = {"lat_min": 12.86, "lat_max": 13.04, "lng_min": 80.07, "lng_max": 80.30}
+# Bounding box that counts as "Chennai" for GPS locations (Greater Chennai: Thiruvottiyur / Ennore in the
+# north to Perumbakkam / Tambaram in the south, Avadi / Porur in the west to the coast in the east).
+BOUNDS = {"lat_min": 12.80, "lat_max": 13.25, "lng_min": 80.05, "lng_max": 80.35}
 
-# Approximate centre points of South Chennai localities: key -> (label, lat, lng)
+# Approximate centre points of Chennai localities: key -> (label, lat, lng)
 AREAS: dict[str, tuple[str, float, float]] = {
     "saidapet": ("Saidapet", 13.0213, 80.2231),
     "guindy": ("Guindy", 13.0067, 80.2206),
@@ -61,13 +61,42 @@ AREAS: dict[str, tuple[str, float, float]] = {
     "chromepet": ("Chromepet", 12.9516, 80.1462),
     "tambaram": ("Tambaram", 12.9249, 80.1000),
     "selaiyur": ("Selaiyur", 12.9100, 80.1400),
+    # central / north / west Chennai
+    "anna_nagar": ("Anna Nagar", 13.0850, 80.2101),
+    "alwarpet": ("Alwarpet", 13.0339, 80.2540),
+    "ambattur": ("Ambattur", 13.1143, 80.1548),
+    "ashok_nagar": ("Ashok Nagar", 13.0373, 80.2123),
+    "avadi": ("Avadi", 13.1067, 80.1090),
+    "egmore": ("Egmore", 13.0732, 80.2609),
+    "ekkaduthangal": ("Ekkaduthangal", 13.0170, 80.2050),
+    "george_town": ("George Town", 13.0950, 80.2870),
+    "kilpauk": ("Kilpauk", 13.0827, 80.2420),
+    "kk_nagar": ("K.K. Nagar", 13.0415, 80.1996),
+    "kodambakkam": ("Kodambakkam", 13.0520, 80.2250),
+    "kolathur": ("Kolathur", 13.1210, 80.2160),
+    "manapakkam": ("Manapakkam", 13.0245, 80.1865),
+    "mogappair": ("Mogappair", 13.0850, 80.1700),
+    "mylapore": ("Mylapore", 13.0368, 80.2676),
+    "nungambakkam": ("Nungambakkam", 13.0569, 80.2425),
+    "park_town": ("Park Town", 13.0830, 80.2750),
+    "perambur": ("Perambur", 13.1186, 80.2377),
+    "porur": ("Porur", 13.0382, 80.1565),
+    "royapettah": ("Royapettah", 13.0540, 80.2640),
+    "royapuram": ("Royapuram", 13.1130, 80.2950),
+    "t_nagar": ("T. Nagar", 13.0418, 80.2341),
+    "thiruvottiyur": ("Thiruvottiyur", 13.1640, 80.3000),
+    "tondiarpet": ("Tondiarpet", 13.1259, 80.2870),
+    "triplicane": ("Triplicane", 13.0580, 80.2750),
+    "vadapalani": ("Vadapalani", 13.0500, 80.2121),
+    "valasaravakkam": ("Valasaravakkam", 13.0420, 80.1760),
+    "villivakkam": ("Villivakkam", 13.1080, 80.2060),
 }
 
 HOSPITALS: list[dict] = [
     {
         "id": "miot",
         "name": "MIOT International",
-        "area": "Manapakkam (south-west Chennai)",
+        "area": "Manapakkam (west Chennai)",
         "address": "4/112, Mount Poonamallee Road, Manapakkam, Chennai - 600 089",
         "lat": 13.0245, "lng": 80.1865,
         "phone": None,
@@ -155,6 +184,52 @@ HOSPITALS: list[dict] = [
         "points": {"neurology_department": 1},
         "source": "https://mgmmalar.in/speciality/neurology/",
     },
+    {
+        "id": "rgggh",
+        "name": "Rajiv Gandhi Government General Hospital - Institute of Neurology",
+        "area": "Park Town (central Chennai)",
+        "address": "Poonamallee High Road, Park Town, Chennai - 600 003",
+        "lat": 13.0814, "lng": 80.2756,
+        "phone": None,
+        "department": "Institute of Neurology (Madras Medical College)",
+        "evidence": [
+            "The Institute's department listing names myasthenia gravis under neuromuscular diseases and runs a weekly Neuromuscular Clinic.",
+            "Diagnostic facilities listed include nerve conduction study (NCS) and electromyography (EMG).",
+            "Government teaching hospital. Check its outpatient timings before you travel.",
+        ],
+        "points": {"mg_named_on_department_listing": 2, "emg_ncs_lab": 2, "neurology_department": 1},
+        "source": "https://mmc.xenovex.com/en/education/madras-medical-college/department/super-speciality/neurology",
+    },
+    {
+        "id": "apollo_greams",
+        "name": "Apollo Hospitals, Greams Road",
+        "area": "Greams Road (central Chennai)",
+        "address": "21, Greams Lane, Off Greams Road, Chennai - 600 006",
+        "lat": 13.0627, "lng": 80.2517,
+        "phone": None,
+        "department": "Apollo Institute of Neurosciences",
+        "evidence": [
+            "Its neurosciences page states: 'We provide care for muscle diseases like myasthenia gravis.'",
+            "Diagnostics listed on that page include electromyography (EMG) and nerve conduction studies.",
+        ],
+        "points": {"mg_named_on_hospital_page": 3, "emg_ncs_lab": 2, "neurology_department": 1},
+        "source": "https://www.apollohospitals.com/chennai/clinical-excellence/neurosciences",
+    },
+    {
+        "id": "kauvery_alwarpet",
+        "name": "Kauvery Hospital, Alwarpet",
+        "area": "Alwarpet / Mylapore",
+        "address": "199, Luz Church Road, Mylapore, Chennai - 600 004",
+        "lat": 13.0390, "lng": 80.2540,
+        "phone": None,
+        "department": "Neurology and Neurophysiology",
+        "evidence": [
+            "Neurology and Neurophysiology department lists nerve conduction studies, EMG and neuromuscular clinics.",
+            "Kauvery's own press release (Aug 2022) describes treating two patients with myasthenia gravis; it names 'Kauvery Hospital Chennai' without a branch, so confirm the branch by phone.",
+        ],
+        "points": {"mg_named_in_team_article": 2, "emg_ncs_lab": 2, "neurology_department": 1},
+        "source": "https://www.kauveryhospital.com/?p=11618",
+    },
 ]
 
 
@@ -176,14 +251,14 @@ def evidence_score(h: dict) -> int:
 
 def resolve_origin(location) -> dict:
     """Turn the request's `location` into {label, lat, lng, source}. Raises ValueError when the
-    location is unknown or outside South Chennai."""
+    location is unknown or outside Chennai."""
     if not isinstance(location, dict):
         raise ValueError("location must be an object such as {\"area\": \"velachery\"}")
     if location.get("area"):
         key = str(location["area"]).strip().lower().replace(" ", "_")
         if key not in AREAS:
             raise ValueError(
-                f"Unknown area '{location['area']}'. MyaScreen's hospital finder covers {REGION} only.")
+                f"Unknown area '{location['area']}'. MyaScreen's hospital finder covers {REGION}.")
         label, lat, lng = AREAS[key]
         return {"label": label, "lat": lat, "lng": lng, "source": "area"}
     if "lat" in location and "lng" in location:
@@ -194,8 +269,8 @@ def resolve_origin(location) -> dict:
         b = BOUNDS
         if not (b["lat_min"] <= lat <= b["lat_max"] and b["lng_min"] <= lng <= b["lng_max"]):
             raise ValueError(
-                f"That location is outside {REGION}. MyaScreen's hospital finder currently covers "
-                f"{REGION} only - please pick your area from the list.")
+                f"That location is outside {REGION}. MyaScreen's hospital finder covers {REGION} only - "
+                f"please pick your area from the list.")
         return {"label": "Your current location", "lat": round(lat, 5), "lng": round(lng, 5), "source": "gps"}
     raise ValueError("Provide either an area or lat/lng in location")
 
@@ -217,7 +292,7 @@ def _public(origin: dict, h: dict, dist: float) -> dict:
 
 
 def locate(location) -> dict:
-    """Nearest and best MG-capable hospital in South Chennai for the given location."""
+    """Nearest and best MG-capable hospital in Chennai for the given location."""
     origin = resolve_origin(location)
     rows = [(h, _km(origin["lat"], origin["lng"], h["lat"], h["lng"])) for h in HOSPITALS]
     nearest_h, nearest_d = min(rows, key=lambda r: r[1])

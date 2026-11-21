@@ -133,7 +133,7 @@
   .report-head-right { text-align:left; }
 }
 
-/* Hospital finder (South Chennai) inside the report */
+/* Hospital finder (Chennai) inside the report */
 .report-hospital-grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); }
 .report-hospital { border:1px solid var(--r-line); border-left:4px solid var(--r-teal); background:var(--r-panel); border-radius:6px; padding:12px 14px; }
 .report-hospital-tag { font-family:var(--font-mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--r-teal); font-weight:700; }

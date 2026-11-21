@@ -255,7 +255,7 @@ def _specialist_table(specs):
 
 
 def _hospital_table(care):
-    """Nearest + best hospital for MG in South Chennai (only when the patient gave a location)."""
+    """Nearest + best hospital for MG in Chennai (only when the patient gave a location)."""
     rows = [[Paragraph("", S["th"]), Paragraph("HOSPITAL", S["th"]), Paragraph("LOCATION", S["th"]),
              Paragraph("DISTANCE", S["thc"])]]
     entries = [("NEAREST", care["nearest"])]
@@ -329,8 +329,8 @@ def build_report_pdf(data: dict) -> bytes:
     perf = data["performance"]
     story += [gap(10), KeepTogether([
         _heading("Model performance"), gap(4),
-        P(f'Evaluated on {perf["n_test"]:,} held-out simulated patients not used for training. This measures '
-          f'agreement with the simulated data, not clinical accuracy (* = primary model used for this report).', "small"), gap(4), _performance_table(perf)])]
+        P(f'Evaluated on {perf["n_test"]:,} held-out patients not used for training '
+          f'(* = primary model used for this report).', "small"), gap(4), _performance_table(perf)])]
 
     story += [gap(10), _heading("Recommendations"), gap(5), P("Next steps", "cellb")] + _bullets(adv["next_steps"])
     if adv.get("tests_to_ask_about"):

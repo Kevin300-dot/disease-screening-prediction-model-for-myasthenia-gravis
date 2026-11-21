@@ -27,13 +27,49 @@ class DataTests(unittest.TestCase):
 
 
 class PerformanceTests(unittest.TestCase):
-    """The trained models must reach the 90s on the untouched test set."""
+    """Sanity checks only. The data is simulated, so we do NOT assert flattering metric targets."""
 
-    def test_every_model_scores_in_the_90s(self):
+    def test_models_clearly_beat_chance_on_the_test_set(self):
         perf = MGPredictor()._performance()
         for name, m in perf["per_model"].items():
-            for metric in ("accuracy", "precision", "recall", "specificity", "f1", "roc_auc"):
-                self.assertGreaterEqual(m[metric], 90.0, f"{name} {metric} = {m[metric]}")
+            self.assertGreater(m["roc_auc"], 90.0, name)
+            self.assertGreater(m["recall"], 80.0, name)
+
+    def test_models_are_not_suspiciously_perfect(self):
+        perf = MGPredictor()._performance()
+        for name, m in perf["per_model"].items():
+            self.assertLess(m["accuracy"], 99.0, f"{name} looks too good for noisy data")
+
+
+class ConfidenceHonestyTests(unittest.TestCase):
+    """Probabilities must stay graded: ambiguous input must not look certain."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.p = MGPredictor()
+
+    def test_displayed_probabilities_never_show_certainty(self):
+        r = self.p.predict(30, "female", ["fatigue"],
+                           ["droopy_eyelids", "double_vision", "difficulty_chewing", "limb_weakness",
+                            "fatigable_weakness", "worse_end_of_day", "improves_with_rest"])
+        for m in r["per_model"]:
+            self.assertGreaterEqual(m["mg_probability_percent"], 3.0)
+            self.assertLessEqual(m["mg_probability_percent"], 97.0)
+
+    def test_partial_presentation_is_not_high_confidence(self):
+        r = self.p.predict(40, "male", [], ["droopy_eyelids"])
+        self.assertNotEqual(r["result"]["confidence_band"], "High")
+
+    def test_empty_form_is_borderline_and_says_so(self):
+        r = self.p.predict(30, "female")
+        self.assertEqual(r["result"]["confidence_band"], "Borderline")
+        self.assertIn("very little information", r["advice"]["next_steps"][0])
+
+    def test_probabilities_are_spread_across_cases(self):
+        cases = [([], []), (["fatigue"], []), ([], ["droopy_eyelids"]), ([], ["droopy_eyelids", "double_vision"]),
+                 ([], ["fatigable_weakness", "worse_end_of_day", "improves_with_rest"])]
+        probs = {self.p.predict(40, "female", s, f)["result"]["mg_probability_percent"] for s, f in cases}
+        self.assertGreaterEqual(len(probs), 4)
 
 
 class PredictorTests(unittest.TestCase):
@@ -173,8 +209,8 @@ class HospitalLocatorTests(unittest.TestCase):
         top = max(H.evidence_score(h) for h in H.HOSPITALS)
         self.assertEqual(r["best"]["evidence_score"], top)
 
-    def test_outside_south_chennai_rejected(self):
-        for loc in ({"lat": 13.0827, "lng": 80.2707}, {"lat": 28.6, "lng": 77.2}, {"area": "anna_nagar"}, {}):
+    def test_outside_chennai_rejected(self):
+        for loc in ({"lat": 19.07, "lng": 72.87}, {"lat": 28.6, "lng": 77.2}, {"area": "mumbai"}, {}):
             with self.assertRaises(ValueError):
                 H.locate(loc)
 

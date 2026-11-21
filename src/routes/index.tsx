@@ -14,7 +14,7 @@ import {
   type PredictRequest, type PredictResponse,
 } from "@/lib/mg-api";
 import { antibodyFields, antibodyStatusOptions, bloodGroups, bloodTests, type AntibodyStatus } from "@/lib/mg-blood";
-import { insideSouthChennai, REGION, southChennaiAreas } from "@/lib/mg-locations";
+import { insideChennai, REGION, chennaiAreas } from "@/lib/mg-locations";
 import { durationOptions, generalSymptoms, historyItems, mgSignGroups, type Option } from "@/lib/mg-options";
 
 export const Route = createFileRoute("/")({
@@ -50,7 +50,7 @@ function Index() {
   const [bloodGroup, setBloodGroup] = useState("");
   const [bloodValues, setBloodValues] = useState<Record<string, string>>({});
   const [antibodies, setAntibodies] = useState<Record<string, AntibodyStatus>>({ achr: "not_tested", musk: "not_tested" });
-  // Hospital finder (optional): a South Chennai area, or the browser's GPS position if it is inside South Chennai.
+  // Hospital finder (optional): a Chennai area, or the browser's GPS position if it is inside Chennai.
   const [area, setArea] = useState("");
   const [gps, setGps] = useState<{ lat: number; lng: number } | null>(null);
   const [gpsMessage, setGpsMessage] = useState("");
@@ -96,7 +96,7 @@ function Index() {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
-        if (insideSouthChennai(latitude, longitude)) {
+        if (insideChennai(latitude, longitude)) {
           setGps({ lat: latitude, lng: longitude });
           setArea("");
           setGpsMessage("Using your current location.");
@@ -219,14 +219,14 @@ function Index() {
                     <span className="section-label">Your location · {REGION} only (for the nearest and best hospital)</span>
                     <div className="flex flex-col gap-3 sm:flex-row">
                       <select
-                        aria-label="Your area in South Chennai"
+                        aria-label="Your area in Chennai"
                         value={gps ? "__gps" : area}
                         onChange={(e) => { setArea(e.target.value === "__gps" ? "" : e.target.value); setGps(null); setGpsMessage(""); }}
                         className={inputClass}
                       >
                         <option value="">Skip (no hospital suggestion)</option>
                         {gps && <option value="__gps">Current location</option>}
-                        {southChennaiAreas.map((a) => <option key={a.key} value={a.key}>{a.label}</option>)}
+                        {chennaiAreas.map((a) => <option key={a.key} value={a.key}>{a.label}</option>)}
                       </select>
                       <Button type="button" variant="ghost" onClick={useMyLocation} className="h-12 shrink-0">
                         <LocateFixed className="size-4" /> Use my location
@@ -368,7 +368,7 @@ function Index() {
                 </div>
                 {(gps || area) && (
                   <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <MapPin className="size-3.5" /> {gps ? "Current location" : southChennaiAreas.find((a) => a.key === area)?.label}, {REGION}
+                    <MapPin className="size-3.5" /> {gps ? "Current location" : chennaiAreas.find((a) => a.key === area)?.label}, {REGION}
                   </div>
                 )}
                 <div className="mt-3 text-xs text-muted-foreground">
@@ -512,7 +512,7 @@ function Results({
       {showAnalytics && (
         <div className="space-y-4">
           <div className="rounded-md bg-surface/60 p-4 ring-1 ring-border">
-            <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">Simulated test-set performance by algorithm</div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">Test-set performance by algorithm</div>
             <PerformanceBars performance={data.performance} />
           </div>
           <div className="rounded-md bg-surface/60 p-4 ring-1 ring-border">

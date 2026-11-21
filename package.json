@@ -1,8 +1,5 @@
 {
   "name": "myascreen",
-  "version": "1.0.0",
-  "description": "Myasthenia gravis screening support: React front end, Flask API, five calibrated ML models, PDF report and South Chennai hospital finder.",
-  "license": "MIT",
   "private": true,
   "sideEffects": false,
   "type": "module",

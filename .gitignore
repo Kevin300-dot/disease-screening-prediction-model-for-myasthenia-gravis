@@ -15,9 +15,6 @@ dist-ssr
 .tanstack/**
 .nitro
 *.local
-.env
-.env.*
-.env.local
 
 # Wrangler / Cloudflare
 .wrangler/
@@ -36,15 +33,8 @@ dist-ssr
 
 # Python
 __pycache__/
-*.py[cod]
-.venv/
-venv/
+*.pyc
 .pytest_cache/
-.ruff_cache/
-*.egg-info/
-
-# Local report output
-report.pdf
-*.pdf
-!docs/*.pdf
-!docs/**/*.pdf
+.env
+.env.*
+!.env.example

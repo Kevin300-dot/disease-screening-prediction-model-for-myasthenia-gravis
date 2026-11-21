@@ -77,7 +77,7 @@ describe("MG API client", () => {
     expect(fetchMock.mock.calls[0]?.[0]).toMatch(/\/metrics$/);
   });
 
-  it("sends an optional South Chennai location alongside the patient data", async () => {
+  it("sends an optional Chennai location alongside the patient data", async () => {
     const request = {
       age: 34, gender: "female" as const, symptoms: ["fatigue"], red_flags: ["droopy_eyelids"],
       location: { area: "velachery" },

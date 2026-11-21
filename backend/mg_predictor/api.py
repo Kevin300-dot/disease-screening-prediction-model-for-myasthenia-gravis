@@ -20,9 +20,9 @@ POST /report-pdf    the same report rendered as a downloadable PDF
   }
 
     + optional  "location": {"area": "velachery"}   or   {"lat": 12.98, "lng": 80.22}
-      (South Chennai only) -> response gains "care_locator": nearest + best hospital for MG
+      (Chennai only) -> response gains "care_locator": nearest + best hospital for MG
 
-GET /hospital-areas      South Chennai localities for the location picker
+GET /hospital-areas      Chennai localities for the location picker
 GET /hospitals           the verified hospital list used by the locator
 GET /options             valid symptom / MG-sign keys, grouped
 GET /metrics             held-out test metrics for all five algorithms
@@ -38,6 +38,9 @@ import re
 
 import subprocess
 import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from flask import Flask, jsonify, request, send_file
 
@@ -126,7 +129,7 @@ def create_app(predictor: MGPredictor | None = None) -> Flask:
                          for k, v in C.BLOOD_TESTS.items()},
             antibodies=C.ANTIBODIES,
             gender=["male", "female"],
-            south_chennai_areas=H.area_options(),
+            chennai_areas=H.area_options(),
         )
 
     @app.get("/hospital-areas")
@@ -181,7 +184,6 @@ def create_app(predictor: MGPredictor | None = None) -> Flask:
 
 
 if __name__ == "__main__":
-    # Bind to localhost by default: the API has no authentication. To accept connections from other
-    # machines or a tunnel (e.g. when the front end is hosted elsewhere), set MYASCREEN_HOST=0.0.0.0.
-    import os
-    create_app().run(host=os.environ.get("MYASCREEN_HOST", "127.0.0.1"), port=5000, debug=False)
+    # 0.0.0.0 so the server also accepts connections through a tunnel (e.g. ngrok) when the
+    # front-end is hosted in the cloud (like Lovable's preview).
+    create_app().run(host="0.0.0.0", port=5000, debug=False)
